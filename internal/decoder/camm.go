@@ -19,7 +19,6 @@ func NewCAMMStream() *CAMMStream {
 }
 
 func (s *CAMMStream) Decode(buf *bytes.Buffer) error {
-	var cycleTimes []float64
 	for {
 		// exit when buffer is empty
 		if buf.Len() == 0 {
@@ -46,10 +45,6 @@ func (s *CAMMStream) Decode(buf *bytes.Buffer) error {
 		err = binary.Read(buf, binary.LittleEndian, packet)
 		if err != nil {
 			return err
-		}
-		p, ok := packet.(*PacketTypeSix)
-		if ok {
-			cycleTimes = append(cycleTimes, p.TimeGPSEpoch)
 		}
 		s.AddPacket(packet, packetType)
 	}
