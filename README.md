@@ -38,3 +38,15 @@ In my case, the CAMM stream is the 0th Data stream, so it is mapped as "0:d"
 ### FFmpeg Resource Links
 - [Github Gist dictionary of FFmpeg flag/options](https://gist.github.com/tayvano/6e2d456a9897f55025e25035478a3a50)
 - [Official FFmpeg Documentation](https://ffmpeg.org/ffmpeg.html)
+
+
+
+
+```
+const FFmpegPath = "C:\\Tools\\ffmpeg\\bin\\ffmpeg.exe"
+const inputVideo = "C:\\Users\\tjaco\\Downloads\\video_lrv_1.mp4"
+const outputPath = "C:\\Users\\tjaco\\Downloads\\camm.bin"
+
+const targetPacket = 6
+const csvFn = `C:\Users\tjaco\GolandProjects\camm_extractor\output_data.csv`
+```
