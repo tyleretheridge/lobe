@@ -34,6 +34,7 @@ None Currently Available
 
 - [ ] Support output to file in CLI commands as option/flag
 - [ ] Implement tea TUI
-- [ ] 
+- [ ] Where does viper store config files 
 - [ ]
 - [ ]
+
