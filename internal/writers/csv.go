@@ -1,4 +1,4 @@
-package output
+package writers
 
 import (
 	"encoding/csv"

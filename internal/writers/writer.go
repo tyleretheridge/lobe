@@ -1,6 +1,9 @@
 package writers
 
-import "camm_extractor/internal/decoder"
+import (
+	"camm_extractor/internal/containers"
+	"fmt"
+)
 
 type WriterType int
 
@@ -13,5 +16,19 @@ func GetWriter(writerType WriterType) DataWriter {
 }
 
 type DataWriter interface {
-	Write(stream decoder.CAMMStream) error
+	Init()
+	Write(packetContainer containers.PacketContainer) error
+}
+
+type TerminalWriter struct {
+}
+
+func (w *TerminalWriter) Init() {
+}
+
+func (w *TerminalWriter) Write(packetContainer containers.PacketContainer) error {
+	for _, packet := range packetContainer.Packets() {
+		fmt.Printf("%d | %s\n", packet.PacketType(), packet)
+	}
+	return nil
 }

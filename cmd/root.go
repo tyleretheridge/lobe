@@ -1,7 +1,10 @@
 package cmd
 
 import (
+	"bytes"
+	"camm_extractor/internal/containers"
 	"camm_extractor/internal/decoder"
+	"camm_extractor/internal/writers"
 	"fmt"
 	"os"
 
@@ -29,12 +32,29 @@ to quickly create a Cobra application.`,
 }
 
 func decodeCallback(binaryFile string) error {
-	cammStream, err := decoder.Run(binaryFile)
+	// Binary Stream
+	binaryData, err := os.ReadFile(binaryFile)
 	if err != nil {
-		return err
+		fmt.Printf("error opening binary file: %s", err)
+
 	}
-	for _, packet := range cammStream.DecodedPackets {
-		fmt.Printf("%d | %s\n", packet.PacketType(), packet)
+	buf := bytes.NewBuffer(binaryData)
+	if err != nil {
+		fmt.Printf("error reading binary stream: %s", err)
+	}
+	// Init Packet Container
+	cammStream := containers.NewCAMMStream()
+	// Decode binary into container
+	err = decoder.DecodeCAMMData(buf, cammStream)
+	if err != nil {
+		fmt.Printf("error decoding binary stream: %s", err)
+	}
+	// Create a writer
+	w := writers.TerminalWriter{}
+	// Write
+	err = w.Write(cammStream)
+	if err != nil {
+		fmt.Println(err.Error())
 	}
 	return nil
 }
