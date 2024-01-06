@@ -21,6 +21,7 @@ func Run(binaryFile string) (*CAMMStream, error) {
 	return cammStream, nil
 }
 
+//
 //func main2() {
 //	startTime := time.Now()
 //	cammStream := NewCAMMStream()

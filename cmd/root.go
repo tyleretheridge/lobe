@@ -1,9 +1,8 @@
 package cmd
 
 import (
-	"camm_extractor/tui"
+	"camm_extractor/internal/decoder"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -24,13 +23,20 @@ examples and usage of using your application. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		p := tui.NewTUI()
-		if _, err := p.Run(); err != nil {
-			fmt.Println("An error has occurred and the program is exiting.")
-			log.Fatal(err)
-		}
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return decodeCallback(args[0])
 	},
+}
+
+func decodeCallback(binaryFile string) error {
+	cammStream, err := decoder.Run(binaryFile)
+	if err != nil {
+		return err
+	}
+	for _, packet := range cammStream.DecodedPackets {
+		fmt.Printf("%d | %s\n", packet.PacketType(), packet)
+	}
+	return nil
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

@@ -30,11 +30,5 @@ FFmpeg & FFprobe are recommended tools as the suite is the gold standard in vide
 None Currently Available
 
 
-# TODO 
-
-- [ ] Support output to file in CLI commands as option/flag
-- [ ] Implement tea TUI
-- [ ] Where does viper store config files 
-- [ ]
-- [ ]
-
+# Tasks
+Implement Writers as a separate package, create boundary between data and output 
