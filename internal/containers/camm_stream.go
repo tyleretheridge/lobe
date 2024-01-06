@@ -2,24 +2,28 @@ package containers
 
 import "camm_extractor/internal/packets"
 
-type CAMMStream struct {
-	DecodedPackets []packets.DecodedPacket
-	CountsMap      map[uint16]int
+type Base struct {
+	storage      []packets.DecodedPacket
+	packetCounts map[uint16]int
 }
 
-func NewCAMMStream() *CAMMStream {
-	return &CAMMStream{
-		DecodedPackets: []packets.DecodedPacket{},
-		CountsMap:      map[uint16]int{},
+func NewBaseContainer() *Base {
+	return &Base{
+		storage:      []packets.DecodedPacket{},
+		packetCounts: map[uint16]int{},
 	}
 }
 
-func (s *CAMMStream) Packets() []packets.DecodedPacket {
-	return s.DecodedPackets
+func (s *Base) PacketCounts() map[uint16]int {
+	return s.packetCounts
 }
 
-func (s *CAMMStream) AddPacket(packet packets.DecodedPacket, packetType uint16) error {
-	s.DecodedPackets = append(s.DecodedPackets, packet)
-	s.CountsMap[packetType]++
+func (s *Base) Packets() []packets.DecodedPacket {
+	return s.storage
+}
+
+func (s *Base) AddPacket(packet packets.DecodedPacket, packetType uint16) error {
+	s.storage = append(s.storage, packet)
+	s.packetCounts[packetType]++
 	return nil
 }

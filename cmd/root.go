@@ -43,7 +43,7 @@ func decodeCallback(binaryFile string) error {
 		fmt.Printf("error reading binary stream: %s", err)
 	}
 	// Init Packet Container
-	cammStream := containers.NewCAMMStream()
+	cammStream := containers.NewBaseContainer()
 	// Decode binary into container
 	err = decoder.DecodeCAMMData(buf, cammStream)
 	if err != nil {

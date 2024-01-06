@@ -32,3 +32,10 @@ None Currently Available
 
 # Tasks
 Implement Writers as a separate package, create boundary between data and output 
+
+
+
+
+# Containers
+Containers are configured to store specific types of packets
+Should take in an options struct that decides what packets are being stored
