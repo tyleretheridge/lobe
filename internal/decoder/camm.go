@@ -2,18 +2,19 @@ package decoder
 
 import (
 	"bytes"
+	"camm_extractor/internal/packets"
 	"encoding/binary"
 	"fmt"
 )
 
 type CAMMStream struct {
-	DecodedPackets []DecodedPacket
+	DecodedPackets []packets.DecodedPacket
 	CountsMap      map[uint16]int
 }
 
 func NewCAMMStream() *CAMMStream {
 	return &CAMMStream{
-		DecodedPackets: []DecodedPacket{},
+		DecodedPackets: []packets.DecodedPacket{},
 		CountsMap:      map[uint16]int{},
 	}
 }
@@ -38,7 +39,7 @@ func (s *CAMMStream) Decode(buf *bytes.Buffer) error {
 			return fmt.Errorf("error reading reserved bytes: %v", err)
 		}
 
-		packet, err := NewDecodedPacket(packetType)
+		packet, err := packets.GetEmptyPacket(packetType)
 		if err != nil {
 			return err
 		}
@@ -46,12 +47,12 @@ func (s *CAMMStream) Decode(buf *bytes.Buffer) error {
 		if err != nil {
 			return err
 		}
-		s.AddPacket(packet, packetType)
+		s.addPacket(packet, packetType)
 	}
 	return nil
 }
 
-func (s *CAMMStream) AddPacket(packet DecodedPacket, packetType uint16) {
+func (s *CAMMStream) addPacket(packet packets.DecodedPacket, packetType uint16) {
 	s.DecodedPackets = append(s.DecodedPackets, packet)
 	s.CountsMap[packetType]++
 }
