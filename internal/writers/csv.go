@@ -11,10 +11,16 @@ import (
 type CSVWriter struct {
 }
 
+func NewCSVWriter() *CSVWriter {
+	return &CSVWriter{}
+}
+
 type CSVData interface {
 	CSVHeader() []string
 	CSVFormat() []string
 }
+
+//func (w CSVWriter) toFile
 
 func (w CSVWriter) ToFile(filepath string, data []CSVData) error {
 	file, err := os.OpenFile(filepath, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0666)
@@ -50,6 +56,7 @@ func (w CSVWriter) ToFile(filepath string, data []CSVData) error {
 type csvWritable interface {
 	header() []string
 	values() []string
+	packetType() int
 }
 
 func adaptPacketToCSVWritable(packet packets.DecodedPacket) (csvWritable, error) {
@@ -86,6 +93,10 @@ func (p csvTypeZero) values() []string {
 	return p.data
 }
 
+func (p csvTypeZero) packetType() int {
+	return 0
+}
+
 func csvTypeZeroAdapter(p packets.TypeZero) csvWritable {
 	return csvTypeZero{[]string{
 		fmt.Sprintf("%f", p.AngleAxis[0]),
@@ -106,6 +117,10 @@ func (p csvTypeOne) values() []string {
 	return p.data
 }
 
+func (p csvTypeOne) packetType() int {
+	return 1
+}
+
 func csvTypeOneAdapter(p packets.TypeOne) csvWritable {
 	return csvTypeOne{[]string{
 		fmt.Sprintf("%d", p.PixelExposureTime),
@@ -123,6 +138,9 @@ func (p csvTypeTwo) header() []string {
 
 func (p csvTypeTwo) values() []string {
 	return p.data
+}
+func (p csvTypeTwo) packetType() int {
+	return 2
 }
 
 func csvTypeTwoAdapter(p packets.TypeTwo) csvWritable {
@@ -143,6 +161,9 @@ func (p csvTypeThree) header() []string {
 
 func (p csvTypeThree) values() []string {
 	return p.data
+}
+func (p csvTypeThree) packetType() int {
+	return 3
 }
 
 func csvTypeThreeAdapter(p packets.TypeThree) csvWritable {
@@ -165,6 +186,9 @@ func (p csvTypeFour) values() []string {
 	return p.data
 }
 
+func (p csvTypeFour) packetType() int {
+	return 4
+}
 func csvTypeFourAdapter(p packets.TypeFour) csvWritable {
 	return csvTypeFour{[]string{
 		fmt.Sprintf("%f", p.Position[0]),
@@ -185,6 +209,9 @@ func (p csvTypeFive) values() []string {
 	return p.data
 }
 
+func (p csvTypeFive) packetType() int {
+	return 5
+}
 func csvTypeFiveAdapter(p packets.TypeFive) csvWritable {
 	return csvTypeFive{[]string{
 		fmt.Sprintf("%f", p.Latitude),
@@ -217,6 +244,10 @@ func (p csvTypeSix) values() []string {
 	return p.data
 }
 
+func (p csvTypeSix) packetType() int {
+	return 6
+}
+
 func csvTypeSixAdapter(p packets.TypeSix) csvWritable {
 	return csvTypeSix{[]string{
 		fmt.Sprintf("%f", p.TimeGPSEpoch),
@@ -245,6 +276,9 @@ func (p csvTypeSeven) values() []string {
 	return p.data
 }
 
+func (p csvTypeSeven) packetType() int {
+	return 7
+}
 func csvTypeSevenAdapter(p packets.TypeSeven) csvWritable {
 	return csvTypeSeven{[]string{
 		fmt.Sprintf("%f", p.MagneticField[0]),
