@@ -40,33 +40,3 @@ Implement Writers as a separate package, create boundary between data and output
 Containers are configured to store specific types of packets
 Should take in an options struct that decides what packets are being stored
 
-
-# CSV Writer
-
-### Options
-- Check if container has one or more packet types 
-- If container has multiple packet types
-  - Single File (records become wrapped)
-  - Multiple Files (each packet type is sent to a separate file and name is generated)
-
-- Single Packet in container
-    - Packets are written to the csv file with fields as csv headers
-
-add a method on interface that returns stored packet types
-this will be available when the container is configured in the cli from flags
-
-
-If container is configured to store 1 type of packet
-csv  
-header1, header2, header3  
-rows of values for packet type 6  
-
-If container is configured to store 1 type of packet
-packettype, headers, values  
-rows of the above  
-
-
-/path/to/csv/csv-typezero.csv
-/path/to/csv/csv-typeone.csv
-/path/to/csv/csv-typetwo.csv
-/path/to/csv/csv-typethree.csv

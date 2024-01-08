@@ -31,3 +31,13 @@ func GetEmptyPacket(packetType uint16) (DecodedPacket, error) {
 	}
 	return nil, fmt.Errorf("unsupported packet type %v", packetType)
 }
+
+func BuildPacketMap(packets []DecodedPacket) map[int][]*DecodedPacket {
+	packetMap := make(map[int][]*DecodedPacket)
+	for i := range packets {
+		packet := packets[i]
+		pt := packet.PacketType()
+		packetMap[pt] = append(packetMap[pt], &packet)
+	}
+	return packetMap
+}

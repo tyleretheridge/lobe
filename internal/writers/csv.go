@@ -1,14 +1,18 @@
 package writers
 
 import (
+	"camm_extractor/internal/containers"
 	"camm_extractor/internal/packets"
 	"encoding/csv"
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 )
 
 type CSVWriter struct {
+	Filename string
 }
 
 func NewCSVWriter() *CSVWriter {
@@ -20,26 +24,77 @@ type CSVData interface {
 	CSVFormat() []string
 }
 
-//func (w CSVWriter) toFile
+func (w CSVWriter) Write(packetContainer containers.PacketContainer) error {
+	packetTypeCount := len(packetContainer.EnabledPackets())
+	if packetTypeCount == 1 {
+		return w.toSingleFile(packetContainer)
+	}
+	return w.toSingleFileWrappedRecords(packetContainer)
+}
 
-func (w CSVWriter) ToFile(filepath string, data []CSVData) error {
-	file, err := os.OpenFile(filepath, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0666)
+func (w CSVWriter) toSingleFile(container containers.PacketContainer) error {
+	file, err := os.OpenFile(w.Filename, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0666)
 	if err != nil {
 		return fmt.Errorf("error opening output file: %w", err)
 	}
 	writer := csv.NewWriter(file)
-
+	// Get Data from Container
+	data := container.Packets()
 	// Write Headers
-	err = writer.Write(data[0].CSVHeader())
+	firstPacket, err := adaptPacketToCSVWritable(data[0])
 	if err != nil {
-		return fmt.Errorf("error writing header %s to csv: %w", data[0].CSVHeader(), err)
+		return err
 	}
-
+	err = writer.Write(firstPacket.header())
+	if err != nil {
+		return fmt.Errorf("error writing header %s to csv: %w", firstPacket.header(), err)
+	}
 	// Write Rows
-	for _, entry := range data {
-		err = writer.Write(entry.CSVFormat())
+	for i := range data {
+		writePacket, err := adaptPacketToCSVWritable(data[i])
 		if err != nil {
-			return fmt.Errorf("error writing record %s to csv: %w", entry.CSVFormat(), err)
+			return err
+		}
+		err = writer.Write(writePacket.values())
+		if err != nil {
+			return fmt.Errorf("error writing record %s to csv: %w", writePacket.values(), err)
+		}
+	}
+	writer.Flush()
+	if err := writer.Error(); err != nil {
+		_ = file.Close()
+		return fmt.Errorf("error writing CSV: %w", err)
+	}
+	if err := file.Close(); err != nil {
+		return fmt.Errorf("error closing file: %w", err)
+	}
+	return nil
+}
+
+func (w CSVWriter) toSingleFileWrappedRecords(container containers.PacketContainer) error {
+	file, err := os.OpenFile(w.Filename, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0666)
+	if err != nil {
+		return fmt.Errorf("error opening output file: %w", err)
+	}
+	writer := csv.NewWriter(file)
+	// Get Data from Container
+	data := container.Packets()
+	// Write Headers
+	headers := []string{"packet_type", "packet_headers", "packet_values"}
+	err = writer.Write(headers)
+	if err != nil {
+		return err
+	}
+	// Write Rows
+	for i := range data {
+		writePacket, err := adaptPacketToCSVWritable(data[i])
+		if err != nil {
+			return err
+		}
+		wrappedData := wrapPacketData(writePacket)
+		err = writer.Write(wrappedData)
+		if err != nil {
+			return fmt.Errorf("error writing record %s to csv: %w", wrappedData, err)
 		}
 	}
 	writer.Flush()
@@ -57,6 +112,13 @@ type csvWritable interface {
 	header() []string
 	values() []string
 	packetType() int
+}
+
+func wrapPacketData(packet csvWritable) []string {
+	packetType := strconv.Itoa(packet.packetType())
+	headers := fmt.Sprintf("(%s)", strings.Join(packet.header(), ", "))
+	values := fmt.Sprintf("(%s)", strings.Join(packet.values(), ", "))
+	return []string{packetType, headers, values}
 }
 
 func adaptPacketToCSVWritable(packet packets.DecodedPacket) (csvWritable, error) {

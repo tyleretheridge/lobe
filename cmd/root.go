@@ -1,10 +1,6 @@
 package cmd
 
 import (
-	"bytes"
-	"camm_extractor/internal/containers"
-	"camm_extractor/internal/decoder"
-	"camm_extractor/internal/writers"
 	"fmt"
 	"os"
 
@@ -32,31 +28,33 @@ to quickly create a Cobra application.`,
 }
 
 func decodeCallback(binaryFile string) error {
-	// Binary Stream
-	binaryData, err := os.ReadFile(binaryFile)
-	if err != nil {
-		fmt.Printf("error opening binary file: %s", err)
-
-	}
-	buf := bytes.NewBuffer(binaryData)
-	if err != nil {
-		fmt.Printf("error reading binary stream: %s", err)
-	}
-	// Init Packet Container
-	cammStream := containers.NewBaseContainer()
-	// Decode binary into container
-	err = decoder.DecodeCAMMData(buf, cammStream)
-	if err != nil {
-		fmt.Printf("error decoding binary stream: %s", err)
-	}
-	// Create a writer
-	w := writers.TerminalWriter{}
-	// Write
-	err = w.Write(cammStream)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
 	return nil
+	//// Binary Stream
+	//binaryData, err := os.ReadFile(binaryFile)
+	//if err != nil {
+	//	fmt.Printf("error opening binary file: %s", err)
+	//
+	//}
+	//buf := bytes.NewBuffer(binaryData)
+	//if err != nil {
+	//	fmt.Printf("error reading binary stream: %s", err)
+	//}
+	//// Init Packet Container
+	//cammStream := containers.NewBaseContainer()
+	//// Decode binary into container
+	//err = decoder.DecodeCAMMData(buf, cammStream)
+	//if err != nil {
+	//	fmt.Printf("error decoding binary stream: %s", err)
+	//}
+	//// Create a writer
+	//fp := "C:\\Users\\tjaco\\GolandProjects\\camm_extractor\\test.csv"
+	//w := writers.CSVWriter{Filename: fp}
+	//// Write
+	//err = w.Write(cammStream)
+	//if err != nil {
+	//	fmt.Println(err.Error())
+	//}
+	//return nil
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
